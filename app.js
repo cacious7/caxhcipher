@@ -3,6 +3,7 @@ const crypto = require("crypto");
 const stdio =  require("stdio");
 const util = require('util');
 const colors = require("./colors.js");
+const cipherMethod = require("./cipherMethod.js");
 
 
 //global variables
@@ -24,7 +25,9 @@ function cipher( file, key ){
 	log(" ");
 	log("CIPHERING initiated............");
 
-	let cipher = crypto.createCipher("aes-256-ctr", key);
+	log(`Cipher Method: ${cipherMethod}`);
+
+	let cipher = crypto.createCipher(cipherMethod, key);
 
 	let streames = createStreames(file, _destinationFile);
 
@@ -75,7 +78,7 @@ function decipher(file, key){
 	log(" ");
 	log("DECIPHERING initiated...........");
 
-	let decipher = crypto.createDecipher("aes-256-ctr", key);
+	let decipher = crypto.createDecipher(cipherMethod, key);
 
 	let streames = createStreames(file, _destinationFile);
 

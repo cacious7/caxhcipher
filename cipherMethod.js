@@ -1,5 +1,7 @@
 
-const cipherMethod = "aes-256-ctr"; //default
+const cipherMethod = "aes-256-ctr"; //default , change this if you want to try other methods but the default works just fine
+
+module.exports = cipherMethod; //dont touch this
 
 /* CIPHER ALGORITHMS(METHODS) TO CHOOSE FROM
 
