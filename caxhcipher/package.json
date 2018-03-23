@@ -1,0 +1,22 @@
+{
+  "name": "caxhcipher",
+  "version": "1.0.0",
+  "description": "Encrypt any file with top notch encryption of your choice from hundreds of options.100% Configuration.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "cipher": "node app.js"
+  },
+  "keywords": [
+    "Easy",
+    "Configurable",
+    "Javascript(NODEJS)",
+    "Cipher",
+    "Program"
+  ],
+  "author": "Cacious Siamunyanga",
+  "license": "ISC",
+  "dependencies": {
+    "stdio": "^0.2.7"
+  }
+}
