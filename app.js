@@ -2,52 +2,48 @@ const fs = require("fs");
 const crypto = require("crypto");
 const stdio =  require("stdio");
 const util = require('util');
-const setTimeoutPromise = util.promisify(setTimeout);
+const colors = require("./colors.js");
 
-function is(type, obj) {
-    var clas = Object.prototype.toString.call(obj).slice(8, -1);
-    return obj !== undefined && obj !== null && clas === type;
-}
 
 //global variables
-
-
-const delay = "40000" ;
-const filePath = "/Apocalypto.2006.720p.BluRay.x264-[YTS.ME].mp4";
-const rawDataPath = `RawData-${filePath.replace("/","")}`;
-const cipheredFilePath = "/ciphered-" + filePath.replace("/","") + ".txt";
-const decipheredFilePath = "/deciphered-" + filePath.replace("/","");
 
 let _key = "cacnga153";
 let _sourceFile = "";
 let _destinationFile = "";
+
+
+//Encipher the file
+//Param: String "fullFilePath", String "password_key"
 
 function cipher( file, key ){
 
 	//variables
 	let buffer = "";
 	let cipheredData = "";
-	let rawData = "";
 
-	console.log(" ");
-	console.log("CIPHERING initiated............");
+	log(" ");
+	log("CIPHERING initiated............");
 
-	let cipher = crypto.createDecipher("aes-256-ctr", key);
+	let cipher = crypto.createCipher("aes-256-ctr", key);
 
 	let streames = createStreames(file, _destinationFile);
 
-	console.log(`Ciphering/Encryption streames => ${streames}`);
+	log(`Ciphering/Encryption streames => ${streames}`);
 
 	streames.input.pipe(cipher).pipe(streames.output);
 
-	console.log(".............CIPHERING will be done in a SHORT WHILE PLEASE WAIT...........");
+	log(".............CIPHERING will be done in a SHORT WHILE PLEASE WAIT...........");
 
 }
 
+
+//CREATE READ AND WRITE STREAMS 
+//FOR THE INPUT AND OUTPUT SREAM RESPECTIVELY
+//Param: String, String
+
 function createStreames(inputReadStreamFilePath, outputWriteStreamFilePath){
 
-	//CREATE READ AND WRITE STREAMS 
-	//FOR THE INPUT AND OUTPUT SREAM RESPECTIVELY
+
 
 	if(inputReadStreamFilePath && outputWriteStreamFilePath){
 
@@ -58,14 +54,16 @@ function createStreames(inputReadStreamFilePath, outputWriteStreamFilePath){
 
 	}else{
 
-		return console.error("Error: Parameters(files) missing ," 
+		return logErr("Error: Parameters(files) missing ," 
 				+ "cannot create input and output files for deciphering )");
 
 	}
 
-
-
 }
+
+
+//Decipher the file
+//Param: String "fullFilePath", String "password_key"
 
 function decipher(file, key){
 
@@ -74,77 +72,131 @@ function decipher(file, key){
 	let buffer = "";
 	let decipheredData = "";
 
-	console.log(" ");
-	console.log("DECIPHERING initiated...........");
+	log(" ");
+	log("DECIPHERING initiated...........");
 
 	let decipher = crypto.createDecipher("aes-256-ctr", key);
 
 	let streames = createStreames(file, _destinationFile);
 
-	console.log(`Deciphering/Decryption Streames => ${streames}`);
+	log(`Deciphering/Decryption Streames => ${streames}`);
 
 	streames.input.pipe(decipher).pipe(streames.output);
 
-	console.log(".............DECIPHERING will be done in a SHORT WHILE PLEASE WAIT...........");
+	log(".............DECIPHERING will be done in a SHORT WHILE PLEASE WAIT...........");
 
- 	
 };
 
-function recreate(file){
 
-	console.prompt()
+//js efficient Object type checking
+//Param: String, Object
 
-	var image = fs.readFile(file, function(err, data) {
-	    fs.writeFile('output' + file.replace("/", ""), data, 'binary', function (err) {
-	        if (err) {
-	            console.log("There was an error writing the image");
-	        }
-	 
-	        else {
-	            console.log("There file was written");
-	        }
-	    });
-	});
+function is(type, obj) {
+    var clas = Object.prototype.toString.call(obj).slice(8, -1);
+    return obj !== undefined && obj !== null && clas === type;
 
 }
 
+
+//add empty row in console
+
+function space(){
+
+	console.log(` `);
+
+}
+
+
+//log out messages to the console
+//Param: String
+
+function log(msg){
+
+	space();
+	console.log(colors.fgCyan(), msg, colors.reset());
+	space();
+
+}
+
+
+//logout errors to the console
+//Param: String
+
+function logErr(err){
+
+		space();
+		console.error(colors.fgMagenta(), err, colors.reset());
+		space();
+
+}
+
+
+//parse urls with double quotation marks around them
+//Param: String
+
+function parseUrl(urlString){	
+
+	if(urlString[0] === '"'){
+		
+		urlString = urlString.replace('"', "");
+
+	}
+
+	if(urlString[urlString.length-1] === '"'){
+
+		urlString = urlString.replace('"', "");
+
+	}
+
+	log(`final parsed url => ${urlString}`);
+
+	return urlString;
+
+}
+
+
+//user action configuration console wizard
+//Para: action === String "Encrypt" / "Decrypt"
+
 function config(action){
 
-	stdio.question(`What file do you want to ${action}? (PLEASE INCUDE FILE EXTENSION EG. /file.txt)`, (err, sourceFile) => {
+	stdio.question(`What file do you want to ${action}? (PLEASE INCUDE FILE EXTENSION EG. FullFilePath.txt)`, (err, sourceFile) => {
 
-		action ? _sourceFile = sourceFile : console.error("Action not chosen.");
+		action ? _sourceFile = parseUrl(sourceFile) : logErr("Action not chosen.");
 
-	    stdio.question(`What file do you want to ${action} to. (PLEASE INCUDE FILE EXTENSION EG. /file.txt)`, (err, destinationFile) => {
+	    stdio.question(`What file do you want to ${action} to. (PLEASE INCUDE FILE EXTENSION EG. FullFilePath.txt)`, (err, destinationFile) => {
 
-	    	action ? _destinationFile = destinationFile : console.error("Action not chosen.");
+	    	action ? _destinationFile = parseUrl(destinationFile) : logErr("Action not chosen.");
 
-        	console.log(`The file ${sourceFile} will be ${action}ed and saved to ${destinationFile}`);
+        	log(`The file ${_sourceFile} will be ${action}ed and saved to ${_destinationFile}`);
 
         	stdio.question("Enter your Key", (err, key) => {
 
+        		const keyFile = `${_destinationFile}___KEY.txt`;
+
         		//write key to key.txt file
-        		fs.writeFile("key.txt", key, (err) => {
+        		fs.writeFile(keyFile, key, (err) => {
 
-        			if(err){ console.error(`Error => ${err}`); return }
+        			if(err){ logErr(`Error => ${err}`); return }
 
-        			console.log("Key has been written to /key.txt");
+        			log(`Key has been written to ${keyFile}`);
 
         		});
 
-        	 	//encrpt or decrypt file
+        	 	//ENCRYPT or DECRYPT file
 
         		if(key){
 
         			_key = key;
 
-        			if(action === "Encrypt") { console.log( cipher( _sourceFile, key )); }
+        			if(action === "Encrypt") { log( cipher( _sourceFile, key )); }
         		 	
-        		 	if(action === "Decrypt") { console.log( decipher( _sourceFile, key )); }
+        		 	if(action === "Decrypt") { log( decipher( _sourceFile, key )); }
         		 
         		
         		}else{
 
-        			console.error("Key cannot be Empty");
+        			logErr("Key cannot be Empty");
         		}
 
 
@@ -154,6 +206,9 @@ function config(action){
     });
 
 }
+
+
+//run the user action helper/wizard
 
 function run(){
 
@@ -170,14 +225,13 @@ function run(){
 
 		}else{
 
-			console.log("Pease Enter a valid answer/action to proceed or press [shift]+[C] to cancel.");
+			log("Pease Enter a valid answer/action to proceed or press [shift]+[C] to cancel.");
 
 		}
 
 	});
+
 }
 
-//Auto test  
-//recreate(filePath);
 
 run();
