@@ -75,7 +75,6 @@ function decipher(file, key){
 	let buffer = "";
 	let decipheredData = "";
 
-	log(" ");
 	log("DECIPHERING initiated...........");
 
 	let decipher = crypto.createDecipher(cipherMethod, key);
@@ -161,7 +160,7 @@ function parseUrl(urlString){
 //user action configuration console wizard
 //Para: action === String "Encrypt" / "Decrypt"
 
-function config(action){
+function startActionWizard(action){
 
 	stdio.question(`What file do you want to ${action}? (PLEASE INCUDE FILE EXTENSION EG. FullFilePath.txt)`, (err, sourceFile) => {
 
@@ -220,11 +219,11 @@ function run(){
 
 		if(action === "e" || action === "encrypt"){
 
-			config("Encrypt");
+			startActionWizard("Encrypt");
 
 		}else if(action === "d" || action === "decrypt"){
 
-			config("Decrypt");
+			startActionWizard("Decrypt");
 
 		}else{
 
